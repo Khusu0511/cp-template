@@ -1,6 +1,83 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+class SegTree { 
+public:
+
+    int n ;
+    vector < int > seg ;
+    
+    SegTree ( vector < int > &arr ){
+        
+        this -> n = arr.size() ;
+        seg.resize ( 4 * n ) ;
+        
+        builtTree ( 0 , 0 , n - 1 , arr ) ;
+        
+    }
+    
+    void builtTree ( int idx , int l , int r , vector < int > &arr ){
+        
+        if ( l == r ){
+            seg[idx] = arr[l] ;
+            return ;
+        }
+        
+        int mid = ( l + r ) / 2 ;
+        
+        builtTree ( 2 * idx + 1 , l , mid , arr ) ;
+        builtTree ( 2 * idx + 2 , mid + 1 , r , arr ) ;
+        
+        seg[idx] = min ( seg[2 * idx + 1] , seg[2 * idx + 2] ) ;
+        
+        return ;
+        
+    }
+    
+    int query ( int idx , int low , int high , int l , int r ){
+        
+        
+        
+        if ( low > r || high < l ){
+            return INT_MAX ;
+        }
+        else if ( low >= l && high <= r ){
+            return seg[idx] ;
+        }
+        
+        int mid = ( low + high ) / 2 ;
+            
+        int left = query ( 2 * idx + 1 , low , mid , l , r ) ;
+        int right = query ( 2 * idx + 2 , mid + 1 , high , l , r ) ;
+        
+        return min ( left , right ) ;
+        
+    }
+    
+    void update ( int idx , int low , int high , int i , int val ){
+        
+        if ( low == high ){
+            seg[idx] = val ;
+            return ;
+        }
+        
+        int mid = ( low + high ) / 2 ;
+        
+        if ( mid >= i ){
+            update ( 2 * idx + 1 , low , mid , i , val ) ;
+        }
+        else{
+            update ( 2 * idx + 2 , mid + 1 , high , i , val ) ;
+        }
+        
+        seg[idx] = min ( seg[2*idx + 1 ] , seg[2*idx + 2] ) ;
+        
+        return ;
+        
+    }
+    
+};
+
 // ==============================
 // FAST I/O
 // ==============================
